@@ -43,13 +43,13 @@ const linksList = [
   {
     title: "Le chalet",
     // caption: 'github.com/quasarframework',
-    icon: "code",
+    icon: "chalet",
     link: "description",
   },
   {
     title: "Tarifs et Réservation",
     // caption: 'chat.quasar.dev',
-    icon: "chat",
+    icon: "calendar_month",
     link: "booking",
   },
 ];
