@@ -3,12 +3,14 @@ const routes = [
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/IndexPage.vue") },
+      { name: "home", path: "", component: () => import("pages/HomeView.vue") },
       {
         path: "description",
         component: () => import("pages/DescriptionPage.vue"),
       },
       { path: "booking", component: () => import("pages/BookingPage.vue") },
+      { path: "tax", component: () => import("pages/TaxPage.vue") },
+      { path: "contact", component: () => import("pages/ContactPage.vue") },
     ],
   },
 

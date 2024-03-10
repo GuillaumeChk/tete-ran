@@ -1,16 +1,10 @@
 <template>
   <q-page class="wrapper q-pa-md">
-    <h4>Tarifs</h4>
+    <h4>Taxe de séjour</h4>
 
     <!-- <q-img src="../assets/Chalet.jpg"></q-img> -->
 
-    <p>tarif</p>
-
-    <h4>Réservation</h4>
-
-    <!-- <q-img src="../assets/Chalet.jpg"></q-img> -->
-
-    <p>agenda</p>
+    <p>La taxe de séjour est de par personne.</p>
   </q-page>
 </template>
 
