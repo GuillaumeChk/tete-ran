@@ -2,12 +2,17 @@
   <q-page class="wrapper q-pa-md">
     <h4>Accès</h4>
 
-    <div>
-      Se garer sur le parking en face de l'hotel, puis continuer à pied sur le
-      chemin pendant 400 mètres (10 minutes).
-    </div>
+    <section class="q-py-md q-gutter-y-md">
+      <div>
+        Se garer sur le parking en face de l'hotel, puis continuer à pied sur le
+        chemin pendant 400 mètres (10 minutes).
+      </div>
 
-    <q-img class="q-my-md" width="611px" src="../assets/itineraire.jpg"></q-img>
+      <fullscreenImage
+        imagePath="src/assets/itineraire.jpg"
+        width="611px"
+      ></fullscreenImage>
+    </section>
 
     <div class="map-container">
       <iframe
@@ -70,4 +75,6 @@
   </q-page>
 </template>
 
-<script setup></script>
+<script setup>
+import FullscreenImage from "../components/FullscreenImage.vue";
+</script>
