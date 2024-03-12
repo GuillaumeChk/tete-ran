@@ -2,6 +2,23 @@
 
 A Quasar Project
 
+### Github Pages deploy
+
+```bash
+quasar build
+```
+
+`(quasar serve dist/spa)`
+
+commit
+
+`git push origin --delete gh-pages`
+
+`git fetch --prune`
+
+`git subtree push --prefix dist/spa origin gh-pages`
+
+
 ## Install the dependencies
 ```bash
 yarn
