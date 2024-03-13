@@ -50,7 +50,7 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: ["es2019", "edge88", "firefox78", "chrome87", "safari13.1"],
-        node: "node20",
+        node: "node16",
       },
 
       vueRouterMode: "history", // available values: 'hash', 'history'
@@ -70,6 +70,9 @@ module.exports = configure(function (/* ctx */) {
       // distDir
 
       // extendViteConf (viteConf) {},
+      extendViteConf(viteConf) {
+        viteConf.base = "./";
+      },
       // viteVuePluginOptions: {},
 
       // vitePlugins: [
