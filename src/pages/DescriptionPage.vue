@@ -2,7 +2,7 @@
   <q-page class="wrapper q-pa-md">
     <h4>Présentation du chalet</h4>
 
-    <fullscreenImage imagePath="src/assets/Chalet.jpg"></fullscreenImage>
+    <fullscreenImage imagePath="Chalet.jpg"></fullscreenImage>
 
     <p>
       Notre chalet La Prise-Milord se trouve au nord du village de

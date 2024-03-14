@@ -9,7 +9,7 @@
       </div>
 
       <fullscreenImage
-        imagePath="src/assets/itineraire.jpg"
+        imagePath="itineraire.jpg"
         width="611px"
       ></fullscreenImage>
     </section>

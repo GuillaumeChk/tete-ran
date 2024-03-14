@@ -1,5 +1,5 @@
 <template>
-  <q-img src="../assets/Chalet.jpg" fit="cover" class="top-image"> </q-img>
+  <q-img src="Chalet.jpg" fit="cover" class="top-image"> </q-img>
 </template>
 
 <style>

@@ -70,9 +70,9 @@ module.exports = configure(function (/* ctx */) {
       // distDir
 
       // extendViteConf (viteConf) {},
-      extendViteConf(viteConf) {
-        viteConf.base = "./";
-      },
+      // extendViteConf(viteConf) {
+      //   viteConf.base = "./";
+      // },
       // viteVuePluginOptions: {},
 
       // vitePlugins: [

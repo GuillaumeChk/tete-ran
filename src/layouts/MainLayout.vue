@@ -23,7 +23,7 @@
               v-if="route.name === 'home'"
               no-spinner
               style="max-width: 150px; min-width: 100px"
-              src="../assets/sctdr.svg
+              src="sctdr.svg
             "
               fit="contain"
             ></q-img>
@@ -31,7 +31,7 @@
               v-else
               no-spinner
               style="max-width: 150px; min-width: 100px"
-              src="../assets/sctdr.svg
+              src="sctdr.svg
             "
               fit="contain"
             ></q-img
@@ -55,7 +55,7 @@
                 v-if="route.name === 'home'"
                 no-spinner
                 style="max-width: 150px; min-width: 100px"
-                src="../assets/sctdr.svg
+                src="sctdr.svg
             "
                 fit="contain"
               ></q-img>
@@ -63,7 +63,7 @@
                 v-else
                 no-spinner
                 style="max-width: 150px; min-width: 100px"
-                src="../assets/sctdr.svg
+                src="sctdr.svg
             "
                 fit="contain"
               ></q-img>
@@ -172,7 +172,7 @@
         <q-img
           no-spinner
           style="max-width: 150px; min-width: 100px"
-          src="../assets/sctdr.svg
+          src="sctdr.svg
           "
           fit="contain"
         ></q-img>
