@@ -1,0 +1,1 @@
+import{Q as a}from"./QPage.ee05d4a2.js";import{_ as r,K as s,L as t,M as o,O as e}from"./index.36e5f8a9.js";import"./render.ebde657c.js";const c={},n=e("h4",null,"Taxe de s\xE9jour",-1),_=e("p",null,"La taxe de s\xE9jour est de par personne.",-1);function p(d,l){return s(),t(a,{class:"wrapper q-pa-md"},{default:o(()=>[n,_]),_:1})}var m=r(c,[["render",p]]);export{m as default};
