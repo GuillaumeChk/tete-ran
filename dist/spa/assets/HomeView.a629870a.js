@@ -1,0 +1,1 @@
+import{Q as e}from"./QImg.9114357b.js";import{_ as r,F as o,G as t}from"./index.3e491eee.js";import"./QSpinner.cb2c6d52.js";import"./vm.40ebc6cd.js";import"./render.b99e3ec4.js";import"./use-timeout.b9731745.js";const _={};function a(c,i){return o(),t(e,{src:"Chalet.jpg",fit:"cover",class:"top-image"})}var u=r(_,[["render",a]]);export{u as default};
