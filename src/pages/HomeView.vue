@@ -4,7 +4,7 @@
 
 <style>
 .top-image {
-  margin-top: -222px;
+  margin-top: -112px;
   width: 100%;
   height: 100vh;
   overflow: hidden;
@@ -12,7 +12,7 @@
 
 @media (min-width: 600px) {
   .top-image {
-    margin-top: -258px;
+    margin-top: -180px;
   }
 }
 </style>

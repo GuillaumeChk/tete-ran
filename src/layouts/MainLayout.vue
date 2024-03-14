@@ -17,12 +17,12 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-        <div class="lt-sm q-pa-xs q-pa-md row inline">
+        <div class="lt-sm q-px-xs q-px-md row inline">
           <router-link to="/" rounded class="homeLogoTab">
             <q-img
               v-if="route.name === 'home'"
               no-spinner
-              style="max-width: 150px; min-width: 100px"
+              style="max-width: 150px; min-width: 100px; max-height: 80px"
               src="sctdr.svg
             "
               fit="contain"
@@ -30,7 +30,7 @@
             <q-img
               v-else
               no-spinner
-              style="max-width: 150px; min-width: 100px"
+              style="max-width: 150px; min-width: 100px; max-height: 80px"
               src="sctdr.svg
             "
               fit="contain"
@@ -54,7 +54,7 @@
               <q-img
                 v-if="route.name === 'home'"
                 no-spinner
-                style="max-width: 150px; min-width: 100px"
+                style="max-width: 150px; min-width: 100px; max-height: 80px"
                 src="sctdr.svg
             "
                 fit="contain"
@@ -62,7 +62,7 @@
               <q-img
                 v-else
                 no-spinner
-                style="max-width: 150px; min-width: 100px"
+                style="max-width: 150px; min-width: 100px; max-height: 80px"
                 src="sctdr.svg
             "
                 fit="contain"
@@ -171,7 +171,7 @@
       <router-link to="/" rounded class="homeLogoTab column items-center">
         <q-img
           no-spinner
-          style="max-width: 150px; min-width: 100px"
+          style="max-width: 150px; min-width: 100px; max-height: 80px"
           src="sctdr.svg
           "
           fit="contain"
@@ -288,4 +288,7 @@ function scrollFunction() {
 a {
   text-decoration: none;
 }
+/* .homeLogoTab {
+  height: 30px;
+} */
 </style>
