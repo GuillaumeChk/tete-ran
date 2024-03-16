@@ -6,7 +6,7 @@
     </q-tabs>
 
     <q-tab-panels v-model="tab" animated>
-      <q-tab-panel name="tarifs">
+      <q-tab-panel name="tarifs" class="form">
         <div class="text-h6">Tarifs</div>
         <table>
           <tbody>
@@ -84,63 +84,308 @@
         </table>
       </q-tab-panel>
 
-      <q-tab-panel name="reservation">
+      <q-tab-panel name="reservation" class="form q-pa-none">
         <div v-if="bookingSystemWorking">
-          <div class="q-gutter-y-sm">
-            <h6>Réservation</h6>
-            Réservation et information auprès de Fabienne et Pascal Breux: +41
-            79 256 44 90 Email: reservation @ prisemilord.ch (merci d’indiquer
-            votre nom et adresse)
+          <q-form
+            @submit="displayConfirmation = true"
+            @validation-error="showValidationErrorMessage = true"
+            @validation-success="showValidationErrorMessage = false"
+            class="q-gutter-y-sm q-pb-xl"
+            greedy
+          >
+            <div class="q-gutter-y-sm">
+              <h6 class="q-pt-md">Pré-réservation</h6>
+              <p>Consultez nos disponibilités ci-dessous puis pré-réservez :</p>
 
-            <h6>Disponibilité</h6>
-
-            <div>
-              <q-field
-                label-slot
-                filled
-                stack-label
-                color="orange"
-                v-model="reservationDate"
-                lazy-rules="ondemand"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'Veuillez sélectionner une nuit',
-                ]"
-                hide-bottom-space
-              >
-                <template v-slot:label> Jour(s) </template>
-                <template v-slot:control>
-                  <q-date
-                    v-model="reservationDate"
-                    :disable="!datePickerDisabled"
-                    :options="datesOptions"
-                    :events="datesHighPrices"
-                    event-color="amber"
-                    navigation-min-year-month="2022/01"
-                    navigation-max-year-month="2032/12"
-                    mask="DD/MM/YYYY"
-                    flat
-                    square
-                    color="orange"
-                    class="q-mt-sm full-width"
-                    minimal
-                    multiple
-                  />
-                </template>
-              </q-field>
               <div>
-                <span class="eventCaption q-mb-xs q-mr-xs"></span
-                ><span class="text-italic text-orange">Légende</span>
-              </div>
-              <div
-                v-if="reservationDate && reservationDate.length > 0"
-                class="q-pa-sm bg-orange-6 text-white"
-              >
-                {{ getFirstAndLastReservationDate().first }} ➜
-                {{ getTomorrowDDMMYYYY(getFirstAndLastReservationDate().last) }}
+                <q-field
+                  label-slot
+                  filled
+                  stack-label
+                  v-model="reservationDate"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Veuillez sélectionner une nuit',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Jour(s) </template>
+                  <template v-slot:control>
+                    <q-date
+                      v-model="reservationDate"
+                      :disable="!datePickerDisabled"
+                      :options="datesOptions"
+                      :events="datesHighPrices"
+                      event-color="amber"
+                      navigation-min-year-month="2024/01"
+                      navigation-max-year-month="2032/12"
+                      mask="DD/MM/YYYY"
+                      flat
+                      square
+                      class="q-mt-sm full-width"
+                      minimal
+                      multiple
+                    />
+                  </template>
+                </q-field>
+                <div>
+                  <p class="text-caption bg-grey-3 rounded q-pa-sm">
+                    <q-badge rounded color="white" />  Disponible<br />
+                    <q-badge rounded color="yellow" />  Pré-réservation en
+                    cours<br />
+                    <q-badge rounded color="red" />  Réservé/complet <br />
+                    <q-badge rounded color="purple" />  Places restantes
+                    disponibles<br />
+                  </p>
+                </div>
+                <div
+                  v-if="reservationDate && reservationDate.length > 0"
+                  class="q-pa-sm bg-blue-6 text-white"
+                >
+                  {{ getFirstAndLastReservationDate().first }} ➜
+                  {{
+                    getTomorrowDDMMYYYY(getFirstAndLastReservationDate().last)
+                  }}
+                </div>
+
+                <h6 class="q-pt-lg">Vos coordonnées</h6>
+
+                <!-- Nom -->
+                <q-input
+                  label-slot
+                  filled
+                  rounded
+                  v-model="clientLastName"
+                  type="text"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Veuillez entrer votre nom de famille',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Nom </template>
+                </q-input>
+
+                <!-- Prénom -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientFirstName"
+                  type="text"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Veuillez entrer votre prénom',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Prénom </template>
+                </q-input>
+
+                <!-- Adresse -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientAddress"
+                  type="text"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Veuillez entrer votre prénom',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Adresse </template>
+                </q-input>
+
+                <!-- Code postal -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientPostalCode"
+                  type="text"
+                  maxlength="6"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Veuillez entrer votre code postal',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Code postal </template>
+                </q-input>
+
+                <!-- Ville -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientCity"
+                  type="text"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Veuillez entrer votre ville',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Ville </template>
+                </q-input>
+
+                <!-- Tel -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientPhone"
+                  type="tel"
+                  maxlength="13"
+                  mask="##############"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Veuillez entrer un numéro valide',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Télephone </template>
+                </q-input>
+
+                <!-- Mail -->
+                <q-input
+                  label-slot
+                  filled
+                  v-model="clientMail"
+                  type="email"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Veuillez entrer une adresse mail valide',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Mail </template>
+                </q-input>
+
+                <!-- Nombre de personnes -->
+                <q-select
+                  label-slot
+                  filled
+                  v-model="people"
+                  :options="peopleQuantityOptions"
+                  lazy-rules="ondemand"
+                  :rules="[
+                    (val) =>
+                      (val && val > 0) ||
+                      'Veuillez saisir le nombre de personnes',
+                  ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:label> Nombre de personnes </template>
+                </q-select>
+
+                <!-- laisser un message -->
+                <q-input
+                  v-model="clientMessage"
+                  class="last-rounded"
+                  borderless
+                  label-slot
+                  autogrow
+                  color="grey-8"
+                  hide-bottom-space
+                >
+                  <template v-slot:label>    Laisser un message… </template>
+                </q-input>
               </div>
             </div>
-          </div>
+
+            <div class="q-pt-md">
+              <q-btn rounded @click="onReset()" flat color="primary">
+                <div>Effacer</div>
+              </q-btn>
+              <q-btn
+                rounded
+                unelevated
+                class="q-ml-sm"
+                type="submit"
+                color="blue"
+              >
+                <div>Valider</div>
+              </q-btn>
+            </div>
+            <p v-if="showValidationErrorMessage" class="text-red">
+              Veuillez remplir correctement tous les champs.
+            </p>
+          </q-form>
+
+          <q-dialog :persistent="true" maximized v-model="displayConfirmation">
+            <q-card class="q-px-lg q-py-md wrapper">
+              <section class="form items-center">
+                <q-card-section class="q-pb-none">
+                  <div class="text-h5 text-uppercase">Récapitulatif</div>
+                  <p>Pré-réservation</p>
+                </q-card-section>
+
+                <q-card-section class="q-pt-none" id="reservationResume">
+                  <div class="q-pl-sm">
+                    <h6>Coordonnées</h6>
+                    <div class="q-pl-md">
+                      Prénom : {{ clientFirstName }}<br />
+                      Nom : {{ clientLastName }}<br />
+                      Adresse : {{ clientAddress }}<br />
+                      Ville : {{ clientCity }}<br />
+                      Code postal : {{ clientPostalCode }}<br />
+                      Mail : {{ clientMail }}<br />
+                      Téléphone : {{ clientPhone }}<br />
+                      Nombre de personnes : {{ people }}<br />
+                      Date d'arrivée :
+                      {{ getFirstAndLastReservationDate().first }} <br />
+                      Date de départ :
+                      {{
+                        getTomorrowDDMMYYYY(
+                          getFirstAndLastReservationDate().last
+                        )
+                      }}
+                    </div>
+                  </div>
+
+                  <div class="q-pt-md">
+                    <div class="text-h6">Total</div>
+                    <div class="q-pl-md">{{ priceTotal }} CHF</div>
+                  </div>
+
+                  <div class="q-pt-md" v-if="clientMessage">
+                    <div class="text-h6">Message :</div>
+                    <div class="q-pl-md">{{ clientMessage }}</div>
+                  </div>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat unelevated v-close-popup>
+                    <div>Retour</div>
+                  </q-btn>
+
+                  <q-btn
+                    unelevated
+                    color="blue"
+                    v-close-popup
+                    @click="checkout()"
+                  >
+                    <div>Envoyer</div>
+                  </q-btn>
+                </q-card-actions>
+              </section>
+            </q-card>
+          </q-dialog>
+        </div>
+        <div v-else>
+          <p class="text-italic">Chargement…</p>
+          <p>Si rien ne s'affiche, appelez-nous directement.</p>
         </div>
       </q-tab-panel>
     </q-tab-panels>
@@ -170,6 +415,51 @@ let calendar = ref([]);
 let datePickerDisabled = computed(() => {
   return roomNameOptions.includes(room.value);
 });
+
+const peopleQuantityOptions = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+];
+
+let showValidationErrorMessage = ref(false);
+let displayConfirmation = ref(false);
+
+let clientLastName = ref();
+let clientFirstName = ref();
+let clientAddress = ref();
+let clientPostalCode = ref();
+let clientCity = ref();
+let clientMail = ref();
+let clientPhone = ref();
+let clientMessage = ref("");
+let people = ref();
+let reservation = computed(() => {
+  return {
+    clientFirstName: clientFirstName.value,
+    clientLastName: clientLastName.value,
+    clientAddress: clientAddress.value,
+    clientPostalCode: clientPostalCode.value,
+    clientCity: clientCity.value,
+    clientMail: clientMail.value,
+    clientPhone: clientPhone.value,
+    room: room.value,
+    people: people.value,
+    clientMessage: clientMessage.value,
+    startDate: null,
+    endDate: null,
+  };
+});
+
+function onReset() {
+  clientFirstName.value = null;
+  clientLastName.value = null;
+  clientAddress.value = null;
+  clientPostalCode.value = null;
+  clientCity.value = null;
+  clientMail.value = null;
+  clientPhone.value = null;
+  clientMessage.value = "";
+  reservationDate.value = null;
+}
 
 function getFirstAndLastReservationDate() {
   function convertDateToDDMMYYY(dateObject) {
@@ -294,8 +584,25 @@ let bookingSystemWorking = ref();
 onMounted(async () => {
   const docSnap = await getDoc(doc(db, "settings", "bookingStatus"));
   bookingSystemWorking.value = docSnap.data().bookingSystemActive;
-  console.log(bookingSystemWorking.value);
 
   querySnapshot = await getDocs(collection(db, "calendar"));
 });
 </script>
+
+<style>
+.form {
+  max-width: 400px;
+  border-radius: 20px;
+  margin: auto;
+}
+
+.rounded {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.last-rounded {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+</style>

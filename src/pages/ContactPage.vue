@@ -76,6 +76,7 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { copyToClipboard } from "quasar";
 import FullscreenImage from "../components/FullscreenImage.vue";
 

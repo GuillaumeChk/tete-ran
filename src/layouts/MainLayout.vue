@@ -215,7 +215,7 @@ const routesList = [
     to: "description",
   },
   {
-    title: "Tarifs et Réservation",
+    title: "Tarifs & Réservation",
     // caption: 'chat.quasar.dev',
     icon: "calendar_month",
     to: "booking",
