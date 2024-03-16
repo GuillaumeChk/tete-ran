@@ -76,5 +76,21 @@
 </template>
 
 <script setup>
+import { copyToClipboard } from "quasar";
 import FullscreenImage from "../components/FullscreenImage.vue";
+
+let addressCopied = ref(false);
+
+function copyAddress(text) {
+  copyToClipboard(text)
+    .then(() => {
+      // success!
+      console.log("copié");
+      addressCopied.value = true;
+    })
+    .catch(() => {
+      // fail
+      console.log("copie échouée");
+    });
+}
 </script>

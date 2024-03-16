@@ -85,60 +85,60 @@
       </q-tab-panel>
 
       <q-tab-panel name="reservation">
-        <div class="q-gutter-y-sm">
-          <h6>Réservation</h6>
-          Réservation et information auprès de Fabienne et Pascal Breux: +41 79
-          256 44 90 Email: reservation @ prisemilord.ch (merci d’indiquer votre
-          nom et adresse)
+        <div v-if="bookingSystemWorking">
+          <div class="q-gutter-y-sm">
+            <h6>Réservation</h6>
+            Réservation et information auprès de Fabienne et Pascal Breux: +41
+            79 256 44 90 Email: reservation @ prisemilord.ch (merci d’indiquer
+            votre nom et adresse)
 
-          <h6>Disponibilité</h6>
+            <h6>Disponibilité</h6>
 
-          <div>
-            <q-field
-              label-slot
-              filled
-              stack-label
-              color="orange"
-              v-model="reservationDate"
-              lazy-rules="ondemand"
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) || 'Veuillez sélectionner une nuit',
-              ]"
-              hide-bottom-space
-            >
-              <template v-slot:label> Jour(s) </template>
-              <template v-slot:control>
-                <q-date
-                  v-model="reservationDate"
-                  :disable="!datePickerDisabled"
-                  :options="datesOptions"
-                  :events="datesHighPrices"
-                  event-color="amber"
-                  navigation-min-year-month="2022/01"
-                  navigation-max-year-month="2032/12"
-                  mask="DD/MM/YYYY"
-                  flat
-                  square
-                  color="orange"
-                  class="q-mt-sm full-width"
-                  minimal
-                  multiple
-                />
-              </template>
-            </q-field>
             <div>
-              <span class="eventCaption q-mb-xs q-mr-xs"></span
-              ><span class="text-italic text-orange">{{
-                $t("booking.legende")
-              }}</span>
-            </div>
-            <div
-              v-if="reservationDate && reservationDate.length > 0"
-              class="q-pa-sm bg-orange-6 text-white"
-            >
-              {{ getFirstAndLastReservationDate().first }} ➜
-              {{ getTomorrowDDMMYYYY(getFirstAndLastReservationDate().last) }}
+              <q-field
+                label-slot
+                filled
+                stack-label
+                color="orange"
+                v-model="reservationDate"
+                lazy-rules="ondemand"
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'Veuillez sélectionner une nuit',
+                ]"
+                hide-bottom-space
+              >
+                <template v-slot:label> Jour(s) </template>
+                <template v-slot:control>
+                  <q-date
+                    v-model="reservationDate"
+                    :disable="!datePickerDisabled"
+                    :options="datesOptions"
+                    :events="datesHighPrices"
+                    event-color="amber"
+                    navigation-min-year-month="2022/01"
+                    navigation-max-year-month="2032/12"
+                    mask="DD/MM/YYYY"
+                    flat
+                    square
+                    color="orange"
+                    class="q-mt-sm full-width"
+                    minimal
+                    multiple
+                  />
+                </template>
+              </q-field>
+              <div>
+                <span class="eventCaption q-mb-xs q-mr-xs"></span
+                ><span class="text-italic text-orange">Légende</span>
+              </div>
+              <div
+                v-if="reservationDate && reservationDate.length > 0"
+                class="q-pa-sm bg-orange-6 text-white"
+              >
+                {{ getFirstAndLastReservationDate().first }} ➜
+                {{ getTomorrowDDMMYYYY(getFirstAndLastReservationDate().last) }}
+              </div>
             </div>
           </div>
         </div>
@@ -163,6 +163,9 @@ import { date } from "quasar";
 let tab = ref("tarifs");
 let reservationDate = ref([]);
 let datesHighPricesCalendar = ref([]);
+let room = ref("chalet");
+const roomNameOptions = ["chalet"];
+let calendar = ref([]);
 
 let datePickerDisabled = computed(() => {
   return roomNameOptions.includes(room.value);
@@ -285,10 +288,13 @@ function setRoomCalendar(roomPathName) {
   calendar.value = calendarData;
 }
 
+let bookingSystemWorking = ref();
+
 // Get calendar data from DB
 onMounted(async () => {
   const docSnap = await getDoc(doc(db, "settings", "bookingStatus"));
   bookingSystemWorking.value = docSnap.data().bookingSystemActive;
+  console.log(bookingSystemWorking.value);
 
   querySnapshot = await getDocs(collection(db, "calendar"));
 });
