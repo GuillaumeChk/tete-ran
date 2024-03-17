@@ -115,7 +115,6 @@
                   <template v-slot:control>
                     <q-date
                       v-model="reservationDate"
-                      :disable="!datePickerDisabled"
                       :options="datesOptions"
                       :events="datesHighPrices"
                       event-color="amber"
@@ -133,7 +132,7 @@
                 <div>
                   <p class="text-caption bg-grey-3 rounded q-pa-sm">
                     <q-badge rounded color="white" />  Disponible<br />
-                    <q-badge rounded color="yellow" />  Pré-réservation en
+                    <q-badge rounded color="amber" />  Pré-réservation en
                     cours<br />
                     <q-badge rounded color="red" />  Réservé/complet <br />
                     <q-badge rounded color="purple" />  Places restantes
@@ -356,7 +355,7 @@
 
                   <div class="q-pt-md">
                     <div class="text-h6">Total</div>
-                    <div class="q-pl-md">{{ priceTotal }} CHF</div>
+                    <!-- <div class="q-pl-md">{{ priceTotal }} CHF</div> -->
                   </div>
 
                   <div class="q-pt-md" v-if="clientMessage">
@@ -408,13 +407,7 @@ import { date } from "quasar";
 let tab = ref("tarifs");
 let reservationDate = ref([]);
 let datesHighPricesCalendar = ref([]);
-let room = ref("chalet");
-const roomNameOptions = ["chalet"];
 let calendar = ref([]);
-
-let datePickerDisabled = computed(() => {
-  return roomNameOptions.includes(room.value);
-});
 
 const peopleQuantityOptions = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -441,7 +434,6 @@ let reservation = computed(() => {
     clientCity: clientCity.value,
     clientMail: clientMail.value,
     clientPhone: clientPhone.value,
-    room: room.value,
     people: people.value,
     clientMessage: clientMessage.value,
     startDate: null,
@@ -509,36 +501,21 @@ function datesOptions(dateElement) {
 }
 
 function datesHighPrices(dateElement) {
-  return (
-    datesHighPricesCalendar.value.includes(dateElement) ||
-    new Date(dateElement).getDay() >= 5
-  ); // + week-ends
+  return datesHighPricesCalendar.value.includes(dateElement);
 }
-
-// Update date picker options (set available dates) when a room is selected
-watch(room, (newRoom) => {
-  if (newRoom) {
-    let roomPathName = roomsData.find(
-      (object) => object.name === newRoom
-    ).pathName;
-    setRoomCalendar(roomPathName);
-  }
-});
 
 let querySnapshot;
 
-// Get room dates availabilities when selecting room
-function setRoomCalendar(roomPathName) {
+// Get dates availabilities
+function getCalendar() {
   let calendarData = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
-    if (doc.data().room === roomPathName && doc.data().confirmed) {
+    if (doc.data().confirmed) {
       const reservation = {
         id: doc.id,
         startDate: doc.data().startDate,
         endDate: doc.data().endDate,
-        room: roomsData.find((object) => object.pathName === doc.data().room)
-          .name,
       };
 
       // if unique night
@@ -578,6 +555,70 @@ function setRoomCalendar(roomPathName) {
   calendar.value = calendarData;
 }
 
+async function checkout() {
+  if (reservation.value) {
+    // displayPaymentRedirected.value = true;
+
+    // Envoi du mail
+    /*
+		let resume = document.getElementById("reservationResume").outerHTML;
+
+		let mailSubject = "RÉSERVATION : " + clientLastName.value + " " + clientFirstName.value + " " + getFirstAndLastReservationDate().first + " ";
+
+		const mailData = {
+			clientMail: clientMail.value,
+			reservation: resume,
+			mailSubject: mailSubject,
+		};
+
+		console.log("tentative d'envoi du mail");
+
+		const responseMailSend = await fetch(
+			mailServiceUrlEnvVariable + `/send-reception-mail`,
+			{
+				method: "POST",
+				headers: {
+					"Content-type": "application/json",
+				},
+				body: JSON.stringify(mailData),
+			}
+		);
+
+		if (responseMailSend.ok) {
+			console.log("mail envoyé");
+		} else {
+			console.log("mail non envoyé");
+		}
+    */
+
+    /// A COMMENTER pour utiliser
+    let eventForDB = {
+      ...reservation.value,
+      // autoCalculatedPrice: priceTotal.value,
+      paid: false,
+      confirmed: false,
+      full: false,
+    };
+
+    if (reservationDate.value) {
+      let dateTemp = getFirstAndLastReservationDate().first.split("/");
+      eventForDB.startDate = Timestamp.fromDate(
+        new Date(dateTemp[2], dateTemp[1] - 1, dateTemp[0])
+      ); // from "DD/MM/YYYY"
+      dateTemp = getFirstAndLastReservationDate().last.split("/");
+      eventForDB.endDate = Timestamp.fromDate(
+        new Date(dateTemp[2], dateTemp[1] - 1, dateTemp[0])
+      ); // from "DD/MM/YYYY"
+    }
+
+    await setDoc(doc(db, "calendar", Date.now().toString()), eventForDB);
+
+    console.log(eventForDB);
+
+    // waitForMailAndDB.value = false;
+  }
+}
+
 let bookingSystemWorking = ref();
 
 // Get calendar data from DB
@@ -586,6 +627,8 @@ onMounted(async () => {
   bookingSystemWorking.value = docSnap.data().bookingSystemActive;
 
   querySnapshot = await getDocs(collection(db, "calendar"));
+
+  getCalendar();
 });
 </script>
 
@@ -594,6 +637,22 @@ onMounted(async () => {
   max-width: 400px;
   border-radius: 20px;
   margin: auto;
+}
+
+.q-date__event {
+  position: absolute;
+  bottom: 0px;
+  z-index: -1;
+  left: 50%;
+  height: 30px;
+  width: 30px;
+  border-radius: 50px;
+}
+.q-btn.bg-primary .q-date__event {
+  background: transparent !important; /* Réglez l'opacité selon vos préférences */
+}
+.block {
+  font-size: 14px !important;
 }
 
 .rounded {
