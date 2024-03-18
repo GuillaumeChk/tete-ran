@@ -11,6 +11,11 @@ const routes = [
       { path: "booking", component: () => import("pages/BookingPage.vue") },
       { path: "tax", component: () => import("pages/TaxPage.vue") },
       { path: "contact", component: () => import("pages/ContactPage.vue") },
+      {
+        path: "administration-agenda",
+        name: "admin",
+        component: () => import("../pages/AdminPage.vue"),
+      },
     ],
   },
 

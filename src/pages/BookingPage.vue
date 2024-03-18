@@ -132,11 +132,11 @@
                 <div>
                   <p class="text-caption bg-grey-3 rounded q-pa-sm">
                     <q-badge rounded color="white" />  Disponible<br />
-                    <q-badge rounded color="amber" />  Pré-réservation en
-                    cours<br />
+                    <q-badge rounded color="amber" />  Pré-réservé (disponible
+                    mais demande en cours)<br />
                     <q-badge rounded color="red" />  Réservé/complet <br />
-                    <q-badge rounded color="purple" />  Places restantes
-                    disponibles<br />
+                    <!-- <q-badge rounded color="purple" />  Places restantes
+                    disponibles<br /> -->
                   </p>
                 </div>
                 <div
