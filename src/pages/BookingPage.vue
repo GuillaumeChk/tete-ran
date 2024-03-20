@@ -115,9 +115,11 @@
                   <template v-slot:control>
                     <q-date
                       v-model="reservationDate"
-                      :options="datesOptions"
-                      :events="datesHighPrices"
-                      event-color="amber"
+                      :options="datesDisabled"
+                      :events="datesCalendar"
+                      :event-color="
+                        (date) => (datesPreBooked(date) ? 'amber' : 'red')
+                      "
                       navigation-min-year-month="2024/01"
                       navigation-max-year-month="2032/12"
                       mask="DD/MM/YYYY"
@@ -381,6 +383,27 @@
               </section>
             </q-card>
           </q-dialog>
+
+          <q-dialog :persistent="true" v-model="displayPaymentRedirected">
+            <q-card class="q-px-lg q-py-md">
+              <section class="wrapper items-center">
+                <q-card-section v-if="waitForMailAndDB">
+                  <q-spinner color="blue" size="3em" />
+                  <p class="text-italic text-grey-6">
+                    Veuillez patienter… Merci
+                  </p>
+                </q-card-section>
+
+                <q-card-section v-else>
+                  <!-- <p>Vous allez être redirigé automatiquement vers la page de paiement. Si la page ne s'ouvre pas, veuillez autoriser votre navigateur vers la redirection si un message vous le propose. Vous pouvez fermer cette page ou continuer à naviguer sur notre site.</p> -->
+
+                  <p>Votre demande a bien été prise en compte.</p>
+
+                  <q-btn rounded unelevated label="Accueil" to="/" />
+                </q-card-section>
+              </section>
+            </q-card>
+          </q-dialog>
         </div>
         <div v-else>
           <p class="text-italic">Chargement…</p>
@@ -406,8 +429,11 @@ import { date } from "quasar";
 
 let tab = ref("tarifs");
 let reservationDate = ref([]);
-let datesHighPricesCalendar = ref([]);
 let calendar = ref([]);
+let calendarBookedDates = ref([]);
+let calendarPreBookedDates = ref([]);
+let displayPaymentRedirected = ref(false);
+let waitForMailAndDB = ref(true);
 
 const peopleQuantityOptions = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -492,16 +518,17 @@ function getTomorrowDDMMYYYY(dateElement) {
   ].join("/");
 }
 
-// Disable already reserved dates in DatePicker
-function datesOptions(dateElement) {
-  return (
-    !calendar.value.includes(dateElement) &&
-    new Date(dateElement) >= new Date().setDate(new Date().getDate() - 1)
-  ); // + not in the past
+// Disabled dates in DatePicker
+function datesDisabled(dateElement) {
+  return new Date(dateElement) >= new Date().setDate(new Date().getDate() - 1); // + not in the past
 }
 
-function datesHighPrices(dateElement) {
-  return datesHighPricesCalendar.value.includes(dateElement);
+function datesCalendar(dateElement) {
+  return calendar.value.includes(dateElement);
+}
+
+function datesPreBooked(dateElement) {
+  return calendarPreBookedDates.value.includes(dateElement);
 }
 
 let querySnapshot;
@@ -509,35 +536,47 @@ let querySnapshot;
 // Get dates availabilities
 function getCalendar() {
   let calendarData = [];
+  let bookedDatesData = [];
+  let preBookedDatesData = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
-    if (doc.data().confirmed) {
-      const reservation = {
-        id: doc.id,
-        startDate: doc.data().startDate,
-        endDate: doc.data().endDate,
-      };
 
-      // if unique night
-      if (
-        reservation.endDate.seconds - reservation.startDate.seconds <
-        24 * 60 * 60
-      ) {
-        calendarData.push(
-          date.formatDate(reservation.startDate.toDate(), "YYYY/MM/DD")
-        ); // do not change mask 'YYYY/MM/DD'
+    const reservation = {
+      id: doc.id,
+      startDate: doc.data().startDate,
+      endDate: doc.data().endDate,
+      confirmed: doc.data().confirmed,
+    };
+
+    function pushToAppropriateDatesArray(reservation, formatedDate) {
+      if (reservation.confirmed) {
+        // booked
+        bookedDatesData.push(date.formatDate(formatedDate, "YYYY/MM/DD")); // do not change mask 'YYYY/MM/DD'
       } else {
-        let nextDate = new Date(doc.data().startDate.toDate());
-        let nights =
-          (reservation.endDate.seconds - reservation.startDate.seconds) /
-          (24 * 60 * 60);
+        // preBooked
+        preBookedDatesData.push(date.formatDate(formatedDate, "YYYY/MM/DD")); // do not change mask 'YYYY/MM/DD'
+      }
+      calendarData.push(date.formatDate(formatedDate, "YYYY/MM/DD")); // do not change mask 'YYYY/MM/DD'
+    }
 
-        for (let i = 0; i <= nights; i++) {
-          calendarData.push(date.formatDate(nextDate, "YYYY/MM/DD")); // do not change mask 'YYYY/MM/DD'
-          nextDate.setDate(nextDate.getDate() + 1);
-        }
+    // if unique night
+    if (
+      reservation.endDate.seconds - reservation.startDate.seconds <
+      24 * 60 * 60
+    ) {
+      pushToAppropriateDatesArray(reservation, reservation.startDate.toDate());
+    } else {
+      let nextDate = new Date(doc.data().startDate.toDate());
+      let nights =
+        (reservation.endDate.seconds - reservation.startDate.seconds) /
+        (24 * 60 * 60);
+
+      for (let i = 0; i <= nights; i++) {
+        pushToAppropriateDatesArray(reservation, nextDate);
+        nextDate.setDate(nextDate.getDate() + 1);
       }
     }
+
     // Désactiver toutes les chambres pour une période, vacances isa
     if (doc.data().allRoomsClosed === true) {
       let nextDate = new Date(doc.data().startDate.toDate());
@@ -551,45 +590,55 @@ function getCalendar() {
       }
     }
   });
-  // console.log(calendarData);
   calendar.value = calendarData;
+  calendarBookedDates.value = bookedDatesData;
+  calendarPreBookedDates.value = preBookedDatesData;
+  // console.log(calendarData);
 }
+
+const mailServiceUrlEnvVariable = import.meta.env.VITE_MAIL_SERVICE_URL;
+// const mailServiceUrlEnvVariable = "http://localhost:3000";
 
 async function checkout() {
   if (reservation.value) {
-    // displayPaymentRedirected.value = true;
+    displayPaymentRedirected.value = true;
 
     // Envoi du mail
-    /*
-		let resume = document.getElementById("reservationResume").outerHTML;
+    let resume = document.getElementById("reservationResume").outerHTML;
 
-		let mailSubject = "RÉSERVATION : " + clientLastName.value + " " + clientFirstName.value + " " + getFirstAndLastReservationDate().first + " ";
+    let mailSubject =
+      "RÉSERVATION : " +
+      clientLastName.value +
+      " " +
+      clientFirstName.value +
+      " " +
+      getFirstAndLastReservationDate().first +
+      " ";
 
-		const mailData = {
-			clientMail: clientMail.value,
-			reservation: resume,
-			mailSubject: mailSubject,
-		};
+    const mailData = {
+      clientMail: clientMail.value,
+      reservation: resume,
+      mailSubject: mailSubject,
+    };
 
-		console.log("tentative d'envoi du mail");
+    console.log("tentative d'envoi du mail");
 
-		const responseMailSend = await fetch(
-			mailServiceUrlEnvVariable + `/send-reception-mail`,
-			{
-				method: "POST",
-				headers: {
-					"Content-type": "application/json",
-				},
-				body: JSON.stringify(mailData),
-			}
-		);
+    const responseMailSend = await fetch(
+      mailServiceUrlEnvVariable + `/send-pre-reservation-mail-sctdr`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(mailData),
+      }
+    );
 
-		if (responseMailSend.ok) {
-			console.log("mail envoyé");
-		} else {
-			console.log("mail non envoyé");
-		}
-    */
+    if (responseMailSend.ok) {
+      console.log("mail envoyé");
+    } else {
+      console.log("mail non envoyé");
+    }
 
     /// A COMMENTER pour utiliser
     let eventForDB = {
@@ -615,7 +664,7 @@ async function checkout() {
 
     console.log(eventForDB);
 
-    // waitForMailAndDB.value = false;
+    waitForMailAndDB.value = false;
   }
 }
 
@@ -649,11 +698,22 @@ onMounted(async () => {
   border-radius: 50px;
 }
 .q-btn.bg-primary .q-date__event {
-  background: transparent !important; /* Réglez l'opacité selon vos préférences */
+  background: transparent !important;
 }
 .block {
   font-size: 14px !important;
 }
+/* .q-date__calendar-item--out div {
+  background: red !important;
+  height: 30px !important;
+  width: 30px !important;
+  border-radius: 50px;
+  color: white;
+  font-size: 14px;
+}
+.q-date__calendar-item--out {
+  opacity: 1 !important;
+} */
 
 .rounded {
   border-bottom-left-radius: 10px;

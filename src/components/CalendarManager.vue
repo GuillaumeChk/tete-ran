@@ -506,7 +506,7 @@ async function sendPreReservationDirectMail() {
   console.log("tentative d'envoi du mail");
 
   const responseMailSend = await fetch(
-    mailServiceUrlEnvVariable + `/send-pre-reservation-mail`,
+    mailServiceUrlEnvVariable + `/send-pre-reservation-mail-sctdr`,
     {
       method: "POST",
       headers: {
@@ -531,7 +531,7 @@ async function sendConfirmationReservationDirectMail() {
   console.log("tentative d'envoi du mail");
 
   const responseMailSend = await fetch(
-    mailServiceUrlEnvVariable + `/send-confirmation-reservation-mail`,
+    mailServiceUrlEnvVariable + `/send-confirmation-reservation-mail-sctdr`,
     {
       method: "POST",
       headers: {
@@ -709,12 +709,6 @@ async function handleEventDrop(info) {
     confirmed: info.event.extendedProps.confirmed,
     paid: info.event.extendedProps.paid,
   };
-  eventDroppedData.value.backgroundColor =
-    eventDroppedData.value.allRoomsClosed || eventDroppedData.value.isItANote
-      ? "black"
-      : roomsData.find(
-          (object) => object.pathName === eventDroppedData.value.room
-        ).color;
 
   // update event
   calendar.value.splice(
@@ -754,12 +748,6 @@ async function handleEventResize(info) {
     confirmed: info.event.extendedProps.confirmed,
     paid: info.event.extendedProps.paid,
   };
-  eventResizedData.value.backgroundColor =
-    eventResizedData.value.allRoomsClosed || eventResizedData.value.isItANote
-      ? "black"
-      : roomsData.find(
-          (object) => object.pathName === eventResizedData.value.room
-        ).color;
 
   // update event
   calendar.value.splice(
