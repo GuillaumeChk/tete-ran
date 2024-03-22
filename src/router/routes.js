@@ -9,7 +9,16 @@ const routes = [
         component: () => import("pages/DescriptionPage.vue"),
       },
       { path: "booking", component: () => import("pages/BookingPage.vue") },
-      { path: "tax", component: () => import("pages/TaxPage.vue") },
+      {
+        name: "confirm",
+        path: "/booking-confirm/:id",
+        component: () => import("pages/BookingConfirmPage.vue"),
+      },
+      {
+        path: "tax",
+        name: "tax",
+        component: () => import("pages/TaxPage.vue"),
+      },
       { path: "contact", component: () => import("pages/ContactPage.vue") },
       {
         path: "administration-agenda",

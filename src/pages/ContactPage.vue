@@ -1,5 +1,5 @@
 <template>
-  <q-page class="wrapper q-pa-md">
+  <q-page class="wrapper q-pa-md q-gutter-y-md">
     <h4>Accès</h4>
 
     <section class="q-py-md q-gutter-y-md">
@@ -13,6 +13,9 @@
         width="611px"
       ></fullscreenImage>
     </section>
+
+    <div>Latitude, longitude : 47.0525, 6.8538</div>
+    <div>47°03'09.0"N 6°51'13.7"E</div>
 
     <div class="map-container">
       <iframe
@@ -72,6 +75,88 @@
         <a href="mailto:jpamcollaud@hotmail.com">jpamcollaud@hotmail.com</a>
       </div>
     </address>
+
+    <q-form
+      @submit="onSubmit"
+      @reset="onReset"
+      class="q-gutter-md"
+      style="max-width: 400px"
+    >
+      <h6>Nous contacter</h6>
+      <q-input
+        v-model="clientMessage"
+        lazy-rules="ondemand"
+        filled
+        label-slot
+        autogrow
+        label="Écrire votre message"
+        :input-style="{ minHeight: '150px' }"
+      >
+      </q-input>
+
+      <!-- Nom -->
+      <q-input
+        label-slot
+        filled
+        v-model="clientName"
+        type="text"
+        lazy-rules="ondemand"
+        :rules="[(val) => (val && val.length > 0) || 'Veuillez entrer un nom']"
+        hide-bottom-space
+        label="Nom"
+      ></q-input>
+
+      <!-- Tel -->
+      <q-input
+        label-slot
+        filled
+        v-model="clientPhone"
+        type="tel"
+        maxlength="13"
+        mask="##############"
+        lazy-rules="ondemand"
+        :rules="[
+          (val) =>
+            (val && val.length > 0) || 'Veuillez entrer un numéro valide',
+        ]"
+        hide-bottom-space
+        label="Télephone"
+      >
+      </q-input>
+
+      <!-- Mail -->
+      <q-input
+        label-slot
+        filled
+        v-model="clientMail"
+        type="email"
+        lazy-rules="ondemand"
+        :rules="[
+          (val) =>
+            (val && val.length > 0) ||
+            'Veuillez entrer une adresse mail valide',
+        ]"
+        hide-bottom-space
+        label="Mail"
+      >
+      </q-input>
+
+      <div class="q-pt-md">
+        <q-btn rounded @click="onReset()" flat color="primary">
+          <div>Effacer</div>
+        </q-btn>
+        <q-btn
+          rounded
+          unelevated
+          icon-right="send"
+          class="q-ml-sm"
+          type="submit"
+          color="blue"
+          label="Envoyer"
+        >
+        </q-btn>
+      </div>
+    </q-form>
   </q-page>
 </template>
 
@@ -79,6 +164,65 @@
 import { ref } from "vue";
 import { copyToClipboard } from "quasar";
 import FullscreenImage from "../components/FullscreenImage.vue";
+
+const mailServiceUrlEnvVariable = import.meta.env.VITE_MAIL_SERVICE_URL;
+
+let clientName = ref("");
+let clientMail = ref();
+let clientPhone = ref();
+let clientMessage = ref("");
+
+async function onSubmit() {
+  // Envoi du mail
+  let resume =
+    "A écrit : \n\n« " +
+    clientMessage.value +
+    " »\n\n et a laissé les coordonnées suivantes : \n\n Nom : " +
+    clientName.value +
+    "\n Mail : " +
+    clientMail.value +
+    "\nTél : " +
+    clientPhone.value +
+    "\n\n <p><i>Ce message a été envoyé automatiquement. Ne pas répondre directement mais utiliser les coordonnées laissées par le client.</i></p>";
+
+  let mailSubject =
+    "MESSAGE de " +
+    clientName.value +
+    ", " +
+    clientMail.value +
+    ", " +
+    clientPhone.value;
+
+  const mailData = {
+    resume: resume,
+    mailSubject: mailSubject,
+  };
+
+  console.log("tentative d'envoi du mail");
+
+  const responseMailSend = await fetch(
+    mailServiceUrlEnvVariable + `/send-contact-message-sctdr`,
+    {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(mailData),
+    }
+  );
+
+  if (responseMailSend.ok) {
+    console.log("mail envoyé");
+  } else {
+    console.log("mail non envoyé");
+  }
+}
+
+function onReset() {
+  clientMail.value = null;
+  clientPhone.value = null;
+  clientMessage.value = "";
+}
 
 let addressCopied = ref(false);
 

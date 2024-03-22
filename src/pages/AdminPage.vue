@@ -27,9 +27,9 @@
         </template>
       </q-input>
 
-      <!-- <div v-if="password === pwdEnvVariable" class="q-mt-xl q-gutter-y-md"> -->
-      <CalendarManager />
-      <!-- </div> -->
+      <div v-if="password === pwdEnvVariable" class="q-mt-xl q-gutter-y-md">
+        <CalendarManager />
+      </div>
     </div>
   </q-page>
 </template>
@@ -38,7 +38,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import CalendarManager from "../components/CalendarManager.vue";
 
-// const pwdEnvVariable = import.meta.env.VITE_ADMIN_BOOKING_PASSWORD;
+const pwdEnvVariable = import.meta.env.VITE_ADMIN_BOOKING_PASSWORD;
 
 let password = ref("");
 let isPwd = ref(true);

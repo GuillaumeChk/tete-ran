@@ -5,7 +5,7 @@
       <q-tab name="reservation" label="Réservation" />
     </q-tabs>
 
-    <q-tab-panels v-model="tab" animated>
+    <q-tab-panels v-model="tab" animated @transition="disableRedButtons()">
       <q-tab-panel name="tarifs" class="form">
         <div class="text-h6">Tarifs</div>
         <table>
@@ -82,6 +82,10 @@
             </tr>
           </tbody>
         </table>
+
+        <br />
+
+        <router-link to="tax">Taxe de séjour</router-link>
       </q-tab-panel>
 
       <q-tab-panel name="reservation" class="form q-pa-none">
@@ -329,12 +333,11 @@
               <section class="form items-center">
                 <q-card-section class="q-pb-none">
                   <div class="text-h5 text-uppercase">Récapitulatif</div>
-                  <p>Pré-réservation</p>
                 </q-card-section>
 
                 <q-card-section class="q-pt-none" id="reservationResume">
                   <div class="q-pl-sm">
-                    <h6>Coordonnées</h6>
+                    <h6>Vos coordonnées</h6>
                     <div class="q-pl-md">
                       Prénom : {{ clientFirstName }}<br />
                       Nom : {{ clientLastName }}<br />
@@ -343,6 +346,12 @@
                       Code postal : {{ clientPostalCode }}<br />
                       Mail : {{ clientMail }}<br />
                       Téléphone : {{ clientPhone }}<br />
+                    </div>
+                  </div>
+
+                  <div class="q-pt-md">
+                    <div class="text-h6">Votre pré-réservation</div>
+                    <p class="q-pl-sm">
                       Nombre de personnes : {{ people }}<br />
                       Date d'arrivée :
                       {{ getFirstAndLastReservationDate().first }} <br />
@@ -352,12 +361,26 @@
                           getFirstAndLastReservationDate().last
                         )
                       }}
-                    </div>
-                  </div>
-
-                  <div class="q-pt-md">
-                    <div class="text-h6">Total</div>
-                    <!-- <div class="q-pl-md">{{ priceTotal }} CHF</div> -->
+                    </p>
+                    <q-markup-table
+                      separator="horizontal"
+                      flat
+                      bordered
+                      wrap-cells
+                    >
+                      <tbody>
+                        <tr v-for="(priceElement, index) in price" :key="index">
+                          <td>1 jour {{ priceElement }}.-</td>
+                          <td>taxe de séjour 0.-</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            Total :
+                            {{ priceTotal }}.- CHF
+                          </td>
+                        </tr>
+                      </tbody>
+                    </q-markup-table>
                   </div>
 
                   <div class="q-pt-md" v-if="clientMessage">
@@ -427,6 +450,8 @@ import {
 import { db } from "../firebase";
 import { date } from "quasar";
 
+const dayPrice = 100;
+
 let tab = ref("tarifs");
 let reservationDate = ref([]);
 let calendar = ref([]);
@@ -475,6 +500,7 @@ function onReset() {
   clientCity.value = null;
   clientMail.value = null;
   clientPhone.value = null;
+  people.value = null;
   clientMessage.value = "";
   reservationDate.value = null;
 }
@@ -597,14 +623,24 @@ function getCalendar() {
 }
 
 const mailServiceUrlEnvVariable = import.meta.env.VITE_MAIL_SERVICE_URL;
-// const mailServiceUrlEnvVariable = "http://localhost:3000";
+const urlFront = import.meta.env.VITE_WEBSITE_FRONT;
 
 async function checkout() {
   if (reservation.value) {
     displayPaymentRedirected.value = true;
 
+    let bookingID = Date.now().toString();
+
     // Envoi du mail
     let resume = document.getElementById("reservationResume").outerHTML;
+
+    // Lien bour confirmer la réservation (au simple clic sur le lien)
+    let linkToConfirmBooking =
+      `\n\n<a href="` +
+      urlFront +
+      `/booking-confirm/` +
+      bookingID +
+      `">Pour confirmer la réservation, cliquer ici.</a>\n`;
 
     let mailSubject =
       "RÉSERVATION : " +
@@ -619,6 +655,7 @@ async function checkout() {
       clientMail: clientMail.value,
       reservation: resume,
       mailSubject: mailSubject,
+      linkToConfirm: linkToConfirmBooking,
     };
 
     console.log("tentative d'envoi du mail");
@@ -643,7 +680,7 @@ async function checkout() {
     /// A COMMENTER pour utiliser
     let eventForDB = {
       ...reservation.value,
-      // autoCalculatedPrice: priceTotal.value,
+      autoCalculatedPrice: priceTotal.value,
       paid: false,
       confirmed: false,
       full: false,
@@ -660,7 +697,7 @@ async function checkout() {
       ); // from "DD/MM/YYYY"
     }
 
-    await setDoc(doc(db, "calendar", Date.now().toString()), eventForDB);
+    await setDoc(doc(db, "calendar", bookingID), eventForDB);
 
     console.log(eventForDB);
 
@@ -679,6 +716,81 @@ onMounted(async () => {
 
   getCalendar();
 });
+
+// get all dates between 2 dates
+let getDaysArray = function (start, end) {
+  for (
+    var arr = [], dt = new Date(start);
+    dt <= new Date(end);
+    dt.setDate(dt.getDate() + 1)
+  ) {
+    arr.push(new Date(dt));
+  }
+  return arr;
+};
+
+// function formatDateToYYYYMMDD(date) {
+//     var d = new Date(date),
+//         month = '' + (d.getMonth() + 1),
+//         day = '' + d.getDate(),
+//         year = d.getFullYear();
+
+//     if (month.length < 2)
+//         month = '0' + month;
+//     if (day.length < 2)
+//         day = '0' + day;
+
+//     return [year, month, day].join('/');
+// }
+
+let price = computed(() => {
+  let priceArray = [];
+
+  // add days between if multiple
+  if (reservationDate.value && reservationDate.value.length >= 2) {
+    let formatDateArray = [];
+    reservationDate.value.forEach((element) => {
+      let dateParts = element.split("/");
+      let date = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+      formatDateArray.push(date);
+    });
+    formatDateArray.sort((a, b) => a.getTime() - b.getTime());
+
+    let datesBetween = getDaysArray(
+      formatDateArray[0],
+      formatDateArray[formatDateArray.length - 1]
+    );
+
+    datesBetween.forEach(() => {
+      priceArray.push(dayPrice);
+    });
+  } else if (reservationDate.value && reservationDate.value.length === 1) {
+    priceArray.push(dayPrice);
+  } else {
+    priceArray = [0];
+  }
+
+  console.log(priceArray);
+  return priceArray;
+});
+let priceTotal = computed(() => {
+  return price.value.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+});
+
+// Disable booked dates but still display red background
+function disableRedButtons() {
+  // Sélection de tous les boutons avec l'enfant spécifié
+  const buttons = document.querySelectorAll("button .bg-red");
+  console.log(buttons);
+
+  // Parcours de tous les boutons
+  buttons.forEach((button) => {
+    button.parentElement.parentElement.disabled = true;
+  });
+}
 </script>
 
 <style>

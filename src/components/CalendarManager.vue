@@ -641,9 +641,10 @@ function handleDateClick(info) {
     clientPhone: "",
     people: 0,
     allDay: true,
+    backgroundColor: "#ff3333",
     borderColor: "white",
     allRoomsClosed: false,
-    confirmed: false,
+    confirmed: true,
     paid: false,
   };
 
@@ -675,6 +676,7 @@ function handleEventClick(info) {
       clientAddress: info.event.extendedProps.clientAddress,
       clientPostalCode: info.event.extendedProps.clientPostalCode,
       clientCity: info.event.extendedProps.clientCity,
+      backgroundColor: "#ff3333",
       borderColor: "white",
       allRoomsClosed: info.event.extendedProps.allRoomsClosed,
       confirmed: info.event.extendedProps.confirmed,
@@ -704,11 +706,16 @@ async function handleEventDrop(info) {
     clientAddress: info.event.extendedProps.clientAddress,
     clientPostalCode: info.event.extendedProps.clientPostalCode,
     clientCity: info.event.extendedProps.clientCity,
+    backgroundColor: "#ff3333",
     borderColor: "white",
     allRoomsClosed: info.event.extendedProps.allRoomsClosed,
     confirmed: info.event.extendedProps.confirmed,
     paid: info.event.extendedProps.paid,
   };
+
+  eventDroppedData.value.backgroundColor = eventDroppedData.value.confirmed
+    ? "#ff3333"
+    : "#1976D2";
 
   // update event
   calendar.value.splice(
@@ -743,11 +750,16 @@ async function handleEventResize(info) {
     clientAddress: info.event.extendedProps.clientAddress,
     clientPostalCode: info.event.extendedProps.clientPostalCode,
     clientCity: info.event.extendedProps.clientCity,
+    backgroundColor: "#ff3333",
     borderColor: "white",
     allRoomsClosed: info.event.extendedProps.allRoomsClosed,
     confirmed: info.event.extendedProps.confirmed,
     paid: info.event.extendedProps.paid,
   };
+
+  eventResizedData.value.backgroundColor = eventResizedData.value.confirmed
+    ? "#ff3333"
+    : "#1976D2";
 
   // update event
   calendar.value.splice(
@@ -775,6 +787,9 @@ async function addNewEvent() {
   });
   calendarOptions.value.events = calendar.value;
 
+  newEventData.value.backgroundColor = newEventData.value.confirmed
+    ? "#ff3333"
+    : "#1976D2";
   // update db
   await updateDB(newEventData);
 
@@ -782,6 +797,10 @@ async function addNewEvent() {
 }
 
 async function editEvent() {
+  eventData.value.backgroundColor = eventData.value.confirmed
+    ? "#ff3333"
+    : "#1976D2";
+
   // update event
   calendar.value.splice(
     calendar.value.findIndex((event) => event.id === eventData.value.id),
@@ -857,6 +876,8 @@ onMounted(async () => {
       start: new Date(doc.data().startDate.seconds * 1000), // millisecond time
       end: new Date(doc.data().endDate.seconds * 1000 + 24 * 60 * 60 * 1000),
       allDay: true,
+      backgroundColor: doc.data().confirmed ? "#ff3333" : "#1976D2",
+      borderColor: "white",
       extendedProps: {
         //   order: roomsData.find((object) => object.pathName === doc.data().room)
         //     .index,

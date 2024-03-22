@@ -226,7 +226,7 @@ const routesList = [
     to: "tax",
   },
   {
-    title: "Accès",
+    title: "Accès & Contact",
     icon: "route",
     to: "contact",
   },
