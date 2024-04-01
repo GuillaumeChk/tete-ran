@@ -4,6 +4,8 @@
 
     <fullscreenImage imagePath="Chalet.jpg"></fullscreenImage>
 
+    <p></p>
+
     <q-responsive
       :ratio="16 / 9"
       style="height: 600px; max-width: 100%; margin-bottom: 100px"
