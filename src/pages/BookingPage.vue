@@ -7,85 +7,133 @@
 
     <q-tab-panels v-model="tab" animated @transition="disableRedButtons()">
       <q-tab-panel name="tarifs" class="form">
-        <div class="text-h6">Tarifs</div>
-        <table>
-          <tbody>
+        <!-- <div class="text-h6">Tarifs</div> -->
+        <q-markup-table dense flat class="q-mt-md" wrap-cells>
+          <thead>
             <tr>
-              <td></td>
-              <td><strong>Membre AN</strong></td>
-              <td><strong>Non-membre</strong></td>
+              <th></th>
+              <th><strong>Membres AN</strong></th>
+              <th><strong>Non-membres</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Tarifs individuels -->
+            <tr class="section-header">
+              <td colspan="3"><strong>Tarifs individuels</strong></td>
             </tr>
             <tr>
               <td>Adultes</td>
-              <td>Fr. 16.-</td>
-              <td>Fr. 25.-</td>
+              <td>CHF 16.–</td>
+              <td>CHF 25.–</td>
             </tr>
             <tr>
-              <td>Juniors (16-20 ans)</td>
-              <td>Fr. 10.-</td>
-              <td>Fr. 19.-</td>
+              <td>Juniors (16–20 ans)</td>
+              <td>CHF 10.–</td>
+              <td>CHF 19.–</td>
             </tr>
             <tr>
-              <td>Enfants (5-15 ans)</td>
-              <td>Fr. 9.-</td>
-              <td>Fr. 14.-</td>
+              <td>Enfants (5–15 ans)</td>
+              <td>CHF 9.–</td>
+              <td>CHF 14.–</td>
+            </tr>
+
+            <!-- Groupes -->
+            <tr class="section-header">
+              <td colspan="3">
+                <strong>Groupes</strong><br />
+                <small>1er mai – 31 octobre / 1er novembre – 30 avril</small>
+              </td>
             </tr>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>Lundi – Vendredi</td>
+              <td>CHF 370.–</td>
+              <td>CHF 420.–</td>
             </tr>
             <tr>
-              <td><strong>Groupes</strong></td>
-              <td><strong>1.05 – 31.10</strong></td>
-              <td><strong>1.11 – 30.04</strong></td>
+              <td>Vendredi 14h – Dimanche 17h</td>
+              <td>CHF 790.–</td>
+              <td>CHF 840.–</td>
             </tr>
             <tr>
-              <td>Lu – Ve</td>
-              <td>Fr. 370.-</td>
-              <td>Fr. 420.-</td>
+              <td>Samedi 14h – Dimanche 17h</td>
+              <td>CHF 520.–</td>
+              <td>CHF 570.–</td>
+            </tr>
+
+            <!-- Écoles -->
+            <tr class="section-header">
+              <td colspan="3">
+                <strong>Écoles</strong><br />
+                <small>1er mai – 31 octobre / 1er novembre – 30 avril</small>
+              </td>
             </tr>
             <tr>
-              <td>Ve (14h) – Di (17h)</td>
-              <td>Fr. 790.-</td>
-              <td>Fr. 840.-</td>
+              <td>Lundi – Vendredi</td>
+              <td>CHF 260.–</td>
+              <td>CHF 310.–</td>
             </tr>
             <tr>
-              <td>Sa (14h) – Di (17h)</td>
-              <td>Fr. 520.-</td>
-              <td>Fr. 570.-</td>
+              <td>Vendredi 14h – Dimanche 17h</td>
+              <td>CHF 670.–</td>
+              <td>CHF 720.–</td>
             </tr>
             <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><strong>Ecoles</strong></td>
-              <td><strong>1.05 – 31.10</strong></td>
-              <td><strong>1.11 – 30.04</strong></td>
-            </tr>
-            <tr>
-              <td>Lu – Ve</td>
-              <td>Fr. 260.-</td>
-              <td>Fr. 310.-</td>
-            </tr>
-            <tr>
-              <td>Ve (14h) – Di (17h)</td>
-              <td>Fr. 670.-</td>
-              <td>Fr. 720.-</td>
-            </tr>
-            <tr>
-              <td>Sa (14h) – Di (17h)</td>
-              <td>Fr. 410.-</td>
-              <td>Fr. 460.-</td>
+              <td>Samedi 14h – Dimanche 17h</td>
+              <td>CHF 410.–</td>
+              <td>CHF 460.–</td>
             </tr>
           </tbody>
-        </table>
+        </q-markup-table>
+
+        <p class="text-caption text-grey q-mt-sm">
+          Chaque adulte qui dort = CHF 3.20 / nuit (détail des taxes ci-dessous)
+        </p>
 
         <br />
 
-        <router-link to="tax">Taxe de séjour</router-link>
+        <section>
+          <h2>Informations sur les taxes</h2>
+
+          <h3>Taxes de séjour</h3>
+          <ul>
+            <li>
+              Par nuitée et par personne (dès 18 ans) :
+              <strong>Fr. 3.20</strong>
+            </li>
+          </ul>
+
+          <h3>Taxes de passage (de 10h à 17h)</h3>
+          <ul>
+            <li>
+              Forfait journalier (réservation pour une journée) :
+              <strong>Fr. 150.-</strong>
+            </li>
+            <li>
+              Par personne (adultes et enfants) : <strong>Fr. 5.-</strong>
+            </li>
+          </ul>
+
+          <h3>Taxes de poubelle</h3>
+          <ul>
+            <li>Sac de 35 L : <strong>Fr. 5.-</strong></li>
+            <li>Sac de 60 L : <strong>Fr. 10.-</strong></li>
+          </ul>
+
+          <p>
+            <em
+              >Les taxes de séjour et les taxes de poubelle sont à régler sur
+              place.</em
+            >
+          </p>
+
+          <h3>Suppléments par temps froid</h3>
+          <p>
+            Un supplément de <strong>Fr. 20.-</strong> par séjour (hors forfait)
+            sera demandé pour le chauffage du chalet.
+            <br />
+            <em>L'électricité et l'eau seront facturées en supplément.</em>
+          </p>
+        </section>
       </q-tab-panel>
 
       <q-tab-panel name="reservation" class="form q-pa-none">
@@ -98,7 +146,7 @@
             greedy
           >
             <div class="q-gutter-y-sm">
-              <h6 class="q-pt-md">Pré-réservation</h6>
+              <h2 class="q-pt-md">Pré-réservation</h2>
               <p>Consultez nos disponibilités ci-dessous puis pré-réservez :</p>
 
               <div>
@@ -140,7 +188,7 @@
                     <q-badge rounded color="white" />  Disponible<br />
                     <q-badge rounded color="amber" />  Pré-réservé (disponible
                     mais demande en cours)<br />
-                    <q-badge rounded color="red" />  Réservé/complet <br />
+                    <q-badge rounded color="red" />  Réservé <br />
                     <!-- <q-badge rounded color="purple" />  Places restantes
                     disponibles<br /> -->
                   </p>
@@ -155,7 +203,7 @@
                   }}
                 </div>
 
-                <h6 class="q-pt-lg">Vos coordonnées</h6>
+                <h2 class="q-pt-lg">Vos coordonnées</h2>
 
                 <!-- Nom -->
                 <q-input
@@ -798,6 +846,11 @@ function disableRedButtons() {
   max-width: 400px;
   border-radius: 20px;
   margin: auto;
+}
+.section-header {
+  background-color: #f5f5f5;
+  text-align: center;
+  font-size: 0.95rem;
 }
 
 .q-date__event {

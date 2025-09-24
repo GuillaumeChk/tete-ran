@@ -38,7 +38,8 @@
 import { ref, onMounted, computed, watch } from "vue";
 import CalendarManager from "../components/CalendarManager.vue";
 
-const pwdEnvVariable = import.meta.env.VITE_ADMIN_BOOKING_PASSWORD;
+// const pwdEnvVariable = import.meta.env.VITE_ADMIN_BOOKING_PASSWORD;
+const pwdEnvVariable = "test";
 
 let password = ref("");
 let isPwd = ref(true);

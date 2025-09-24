@@ -1,6 +1,6 @@
 <template>
   <q-page class="wrapper q-pa-md q-gutter-y-md">
-    <h4>Accès</h4>
+    <h1>Accès</h1>
 
     <section class="q-py-md q-gutter-y-md">
       <div>
@@ -30,7 +30,7 @@
       ></iframe>
     </div>
 
-    <h4>Contact</h4>
+    <h1>Contact</h1>
 
     <address class="address q-gutter-md column">
       <div style="display: inline-block; white-space: nowrap">
@@ -82,7 +82,7 @@
       class="q-gutter-md"
       style="max-width: 400px"
     >
-      <h6>Nous contacter</h6>
+      <h3>Nous contacter</h3>
       <q-input
         v-model="clientMessage"
         lazy-rules="ondemand"

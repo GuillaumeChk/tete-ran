@@ -5,7 +5,7 @@
       :class="
         route.name === 'home' ? 'navbar-transparent gradient' : 'navbar-solid'
       "
-      height-hint="98"
+      reveal
     >
       <q-toolbar id="toolbar" class="justify-between q-pa-md">
         <q-btn
@@ -221,9 +221,9 @@ const routesList = [
     to: "booking",
   },
   {
-    title: "Taxe de séjour",
-    icon: "attach_money",
-    to: "tax",
+    title: "Photos",
+    icon: "photo",
+    to: "photos",
   },
   {
     title: "Accès & Contact",

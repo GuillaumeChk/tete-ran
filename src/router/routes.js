@@ -15,9 +15,9 @@ const routes = [
         component: () => import("pages/BookingConfirmPage.vue"),
       },
       {
-        path: "tax",
-        name: "tax",
-        component: () => import("pages/TaxPage.vue"),
+        path: "photos",
+        name: "photos",
+        component: () => import("pages/PhotosPage.vue"),
       },
       { path: "contact", component: () => import("pages/ContactPage.vue") },
       {
